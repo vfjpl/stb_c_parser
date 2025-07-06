@@ -1,6 +1,17 @@
 #include "utils.h"
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+string_t util_asprintf(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	string_t str = {0};
+	str.size = vasprintf(&str.buf, format, args);
+	va_end(args);
+	return str;
+}
 
 string_t util_readfile(const char* filename)
 {
