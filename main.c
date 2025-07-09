@@ -8,10 +8,10 @@ static FILE* preprocessed_fopen(const char* filename)
 {
 	const char* tmp_filename = tmpnam(NULL);
 	string_t str = util_asprintf("cpp %s > %s", filename, tmp_filename);
-	system(str.buf);
+	system(str.ptr);
 	FILE* file = fopen(tmp_filename, "re");
 	remove(tmp_filename);
-	free(str.buf);
+	free(str.ptr);
 	return file;
 }
 
@@ -19,14 +19,16 @@ static string_t preprocess_file(const char* filename)
 {
 	string_t str = {0};
 	FILE* file = preprocessed_fopen(filename);
-	if(!file) return str;
-	fseek(file, 0, SEEK_END);
-	str.size = ftell(file);
-	rewind(file);
-	str.buf = (char*)malloc(str.size + 1);
-	fread(str.buf, 1, str.size, file);
-	str.buf[str.size] = '\0';
-	fclose(file);
+	if(file)
+	{
+		fseek(file, 0, SEEK_END);
+		str.size = ftell(file);
+		rewind(file);
+		str.ptr = (char*)malloc(str.size + 1);
+		fread(str.ptr, 1, str.size, file);
+		str.ptr[str.size] = '\0';
+		fclose(file);
+	}
 	return str;
 }
 
@@ -36,7 +38,7 @@ static void print_tokens(const char* filename, bool preprocess)
 
 	char buff[4096] = {0};
 	stb_lexer lexer = {0};
-	stb_c_lexer_init(&lexer, str.buf, str.buf + str.size, buff, sizeof(buff));
+	stb_c_lexer_init(&lexer, str.buptrf, str.ptr + str.size, buff, sizeof(buff));
 
 	stb_lex_location loc = {0};
 	while(stb_c_lexer_get_token(&lexer))
@@ -45,7 +47,7 @@ static void print_tokens(const char* filename, bool preprocess)
 		//printf("%3d:%3d : %.*s\n", loc.line_number, loc.line_offset, (int)(lexer.parse_point - lexer.where_firstchar), lexer.where_firstchar);
 	}
 
-	free(str.buf);
+	free(str.ptr);
 }
 
 int main(void)

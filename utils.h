@@ -3,7 +3,7 @@
 
 typedef struct
 {
-	char* buf;
+	char* ptr;
 	long size;
 } string_t;
 
