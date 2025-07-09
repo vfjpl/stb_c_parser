@@ -38,7 +38,7 @@ static void print_tokens(const char* filename, bool preprocess)
 
 	char buff[4096] = {0};
 	stb_lexer lexer = {0};
-	stb_c_lexer_init(&lexer, str.buptrf, str.ptr + str.size, buff, sizeof(buff));
+	stb_c_lexer_init(&lexer, str.ptr, str.ptr + str.size, buff, sizeof(buff));
 
 	stb_lex_location loc = {0};
 	while(stb_c_lexer_get_token(&lexer))
